@@ -638,8 +638,8 @@ class ComputeLossOTA:
     def build_targets(self, p, targets, imgs):
         
         #indices, anch = self.find_positive(p, targets)
-        #indices, anch = self.find_3_positive(p, targets)
-        indices, anch = self.find_4_positive(p, targets)
+        indices, anch = self.find_3_positive(p, targets)
+        #indices, anch = self.find_4_positive(p, targets)
         #indices, anch = self.find_5_positive(p, targets)
         #indices, anch = self.find_9_positive(p, targets)
         device = torch.device(targets.device)
