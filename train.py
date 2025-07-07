@@ -35,6 +35,24 @@ from utils.plots import plot_images, plot_labels, plot_results, plot_evolution
 from utils.torch_utils import ModelEMA, select_device, intersect_dicts, torch_distributed_zero_first, is_parallel
 from utils.wandb_logging.wandb_utils import WandbLogger, check_wandb_resume
 
+
+
+import functools
+
+# Store the original torch.load function
+_original_torch_load = torch.load
+
+def custom_torch_load(*args, **kwargs):
+    # If 'weights_only' is not explicitly set, set it to False
+    if 'weights_only' not in kwargs:
+        kwargs['weights_only'] = False
+    print(f"DEBUG: torch.load called with weights_only={kwargs.get('weights_only', 'default_was_True_now_False')}") # Optional: for debugging
+    return _original_torch_load(*args, **kwargs)
+
+# Monkey-patch torch.load
+torch.load = custom_torch_load
+# --- END OF CUSTOM PATCH ---
+
 logger = logging.getLogger(__name__)
 
 
@@ -68,7 +86,7 @@ def train(hyp, opt, device, tb_writer=None):
     loggers = {'wandb': None}  # loggers dict
     if rank in [-1, 0]:
         opt.hyp = hyp  # add hyperparameters
-        run_id = torch.load(weights, map_location=device).get('wandb_id') if weights.endswith('.pt') and os.path.isfile(weights) else None
+        run_id = torch.load(weights, map_location=device,).get('wandb_id') if weights.endswith('.pt') and os.path.isfile(weights) else None
         wandb_logger = WandbLogger(opt, Path(opt.save_dir).stem, run_id, data_dict)
         loggers['wandb'] = wandb_logger.wandb
         data_dict = wandb_logger.data_dict
