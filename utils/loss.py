@@ -998,7 +998,8 @@ class ComputeLossBinOTA:
             for i, pi in enumerate(p):
                 
                 obj_idx = self.wh_bin_sigmoid.get_length()*2 + 2
-                
+                print(f"indices length: {len(indices)}, current index: {i}")
+
                 b, a, gj, gi = indices[i]
                 idx = (b == batch_idx)
                 b, a, gj, gi = b[idx], a[idx], gj[idx], gi[idx]                
